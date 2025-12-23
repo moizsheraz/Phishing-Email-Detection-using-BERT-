@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishGuard - Email Scanner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; padding: 2rem; }
+        .container { max-width: 700px; margin: 0 auto; }
+        h1 { text-align: center; font-size: 2rem; margin-bottom: 0.5rem; background: linear-gradient(135deg, #22d3ee, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .subtitle { text-align: center; color: #64748b; margin-bottom: 2rem; }
+        .card { background: rgba(30, 41, 59, 0.8); border: 1px solid #334155; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+        textarea { width: 100%; min-height: 150px; background: #1e293b; border: 1px solid #475569; border-radius: 8px; padding: 1rem; color: #e2e8f0; font-size: 0.95rem; resize: vertical; }
+        textarea:focus { outline: none; border-color: #22d3ee; }
+        .btn { width: 100%; padding: 1rem; background: linear-gradient(135deg, #22d3ee, #0891b2); border: none; border-radius: 8px; color: #0f172a; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 1rem; transition: transform 0.2s; }
+        .btn:hover { transform: translateY(-2px); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .result { padding: 1.5rem; border-radius: 12px; margin-top: 1.5rem; display: none; }
+        .result.safe { background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; }
+        .result.danger { background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; }
+        .result-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+        .result-icon { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        .safe .result-icon { background: rgba(16, 185, 129, 0.2); }
+        .danger .result-icon { background: rgba(239, 68, 68, 0.2); }
+        .result-title { font-size: 1.5rem; font-weight: 700; }
+        .safe .result-title { color: #10b981; }
+        .danger .result-title { color: #ef4444; }
+        .confidence { margin-top: 1rem; }
+        .conf-bar { height: 8px; background: #1e293b; border-radius: 4px; margin-top: 0.5rem; overflow: hidden; }
+        .conf-fill { height: 100%; border-radius: 4px; transition: width 0.5s; }
+        .safe .conf-fill { background: #10b981; }
+        .danger .conf-fill { background: #ef4444; }
+        .probs { display: flex; gap: 2rem; margin-top: 1rem; }
+        .prob-item { flex: 1; }
+        .prob-label { color: #94a3b8; font-size: 0.85rem; }
+        .prob-value { font-size: 1.25rem; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛡️ PhishGuard AI</h1>
+        <p class="subtitle">Detect phishing emails with AI</p>
+        
+        <div class="card">
+            <textarea id="email" placeholder="Paste your email content here..."></textarea>
+            <button class="btn" id="analyze">🔍 Analyze Email</button>
+        </div>
+        
+        <div class="result" id="result">
+            <div class="result-header">
+                <div class="result-icon" id="icon"></div>
+                <div class="result-title" id="title"></div>
+            </div>
+            <div class="confidence">
+                <span>Confidence: <strong id="conf">0%</strong></span>
+                <div class="conf-bar"><div class="conf-fill" id="confFill"></div></div>
+            </div>
+            <div class="probs">
+                <div class="prob-item">
+                    <div class="prob-label">Legitimate</div>
+                    <div class="prob-value" id="legit">0%</div>
+                </div>
+                <div class="prob-item">
+                    <div class="prob-label">Phishing</div>
+                    <div class="prob-value" id="phish">0%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const btn = document.getElementById('analyze');
+        const email = document.getElementById('email');
+        const result = document.getElementById('result');
+        
+        btn.addEventListener('click', async () => {
+            if (!email.value.trim()) return alert('Enter email content');
+            
+            btn.disabled = true;
+            btn.textContent = '⏳ Analyzing...';
+            
+            try {
+                const res = await fetch('/api/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: email.value })
+                });
+                const data = await res.json();
+                
+                if (data.error) throw new Error(data.error);
+                
+                result.className = 'result ' + (data.is_phishing ? 'danger' : 'safe');
+                result.style.display = 'block';
+                document.getElementById('icon').textContent = data.is_phishing ? '⚠️' : '✅';
+                document.getElementById('title').textContent = data.prediction;
+                document.getElementById('conf').textContent = data.confidence + '%';
+                document.getElementById('confFill').style.width = data.confidence + '%';
+                document.getElementById('legit').textContent = data.probabilities.legitimate + '%';
+                document.getElementById('phish').textContent = data.probabilities.phishing + '%';
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+            
+            btn.disabled = false;
+            btn.textContent = '🔍 Analyze Email';
+        });
+    </script>
+</body>
+</html>

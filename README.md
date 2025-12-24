@@ -1,10 +1,23 @@
+---
+title: PhishGuard AI - Phishing Email Detection
+emoji: 🛡️
+colorFrom: blue
+colorTo: purple
+sdk: gradio
+sdk_version: 4.0.0
+app_file: app.py
+pinned: false
+license: mit
+---
+
 # 🛡️ PhishGuard AI - Phishing Email Detection
 
-A modern web application for detecting phishing emails using BERT (Bidirectional Encoder Representations from Transformers). Features both Flask and FastAPI implementations with a sleek cybersecurity-themed UI.
+A modern web application for detecting phishing emails using BERT (Bidirectional Encoder Representations from Transformers). Deployed on Hugging Face Spaces with an interactive Gradio interface.
 
 ![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-ee4c2c.svg)
 ![BERT](https://img.shields.io/badge/BERT-Transformers-yellow.svg)
+![Gradio](https://img.shields.io/badge/Gradio-4.0-orange.svg)
 
 ## 📁 Project Structure
 
@@ -30,19 +43,39 @@ phishing_detector/
 
 ## 🚀 Quick Start
 
-### Option 1: Flask (Recommended for simplicity)
+### Live Demo on Hugging Face Spaces
+
+Try the live demo: [PhishGuard AI on Hugging Face Spaces](https://huggingface.co/spaces/moizsheraz/phishing-email-detection)
+
+### Local Installation
+
+#### Option 1: Gradio Interface (Recommended for Demo)
 
 ```bash
 # Install dependencies
 pip install -r requirements.txt
 
-# Run the application
+# Run the Gradio app
 python app.py
+```
+
+Visit: `http://localhost:7860`
+
+#### Option 2: Flask (Original Implementation)
+
+First, rename `main.py` to use it:
+
+```bash
+# Install Flask dependencies
+pip install flask flask-cors torch transformers
+
+# Run the Flask application
+python main.py
 ```
 
 Visit: `http://localhost:5000`
 
-### Option 2: FastAPI (Recommended for production)
+#### Option 3: FastAPI (For Production)
 
 ```bash
 # Install dependencies
@@ -155,6 +188,53 @@ Response:
 }
 ```
 
+## 🚀 Deploy to Hugging Face Spaces
+
+### Step-by-Step Deployment
+
+1. **Create a Hugging Face Account**: Sign up at [huggingface.co](https://huggingface.co/)
+
+2. **Create a New Space**:
+   - Go to [huggingface.co/new-space](https://huggingface.co/new-space)
+   - Choose a name for your Space (e.g., "phishing-email-detection")
+   - Select "Gradio" as the SDK
+   - Choose visibility (Public or Private)
+
+3. **Upload Files**:
+   - Upload `app.py` (Gradio interface)
+   - Upload `requirements.txt` (dependencies)
+   - Upload `README.md` (with YAML frontmatter)
+
+4. **Automatic Deployment**:
+   - Hugging Face Spaces will automatically build and deploy your app
+   - Wait for the build to complete (usually 2-5 minutes)
+   - Your app will be live at `https://huggingface.co/spaces/YOUR-USERNAME/SPACE-NAME`
+
+### Alternative: Deploy via Git
+
+```bash
+# Clone your Space repository
+git clone https://huggingface.co/spaces/YOUR-USERNAME/SPACE-NAME
+cd SPACE-NAME
+
+# Copy the files
+cp /path/to/app.py .
+cp /path/to/requirements.txt .
+cp /path/to/README.md .
+
+# Commit and push
+git add .
+git commit -m "Initial deployment"
+git push
+```
+
+### Environment Variables (Optional)
+
+If you need to configure environment variables:
+1. Go to your Space settings
+2. Add variables under "Repository secrets"
+3. Common variables: `MODEL_PATH`, `HF_TOKEN`, etc.
+
 ## 🐳 Docker Deployment
 
 Create a `Dockerfile`:
@@ -185,12 +265,18 @@ docker run -p 5000:5000 phishguard
 
 ## 🎨 Features
 
+### Gradio Interface
+- **Interactive Demo**: Easy-to-use web interface powered by Gradio
 - **Real-time Analysis**: Instant phishing detection with confidence scores
-- **Batch Processing**: Analyze multiple emails at once
+- **Example Emails**: Pre-loaded examples for quick testing
+- **Rich Output**: Formatted results with visual indicators and security tips
+- **Responsive Design**: Works on desktop and mobile devices
+
+### Original Flask/FastAPI Interface
+- **Batch Processing**: Analyze multiple emails at once (Flask version)
 - **Modern UI**: Dark cybersecurity theme with glassmorphism effects
-- **Responsive Design**: Works on desktop and mobile
 - **Visual Feedback**: Animated confidence meters and status indicators
-- **Security Tips**: Context-aware advice based on results
+- **REST API**: Programmatic access via API endpoints
 
 ## 📊 Model Details
 

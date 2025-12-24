@@ -32,6 +32,8 @@ def predict_phishing(email_text):
         return "⚠️ Please enter email content to analyze."
     
     # Preprocess and tokenize
+    # Note: Lowercase conversion matches the model's training preprocessing
+    # The BERT tokenizer handles additional preprocessing internally
     text = email_text.lower()
     inputs = tokenizer(
         text,
